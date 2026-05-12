@@ -2,10 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-const sqlite3 = require('sqlite3').verbose();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Use memory storage for now (data will reset on restart)
+// We'll fix SQLite later
+let appointments = [];
+let nextId = 1;
 
 // Middleware
 app.use(cors());
@@ -13,92 +17,93 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Database setup
-const db = new sqlite3.Database('./appointments.db', (err) => {
-    if (err) console.error('Database error:', err);
-    else {
-        console.log('Connected to SQLite database');
-        db.run(`CREATE TABLE IF NOT EXISTS appointments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            first_name TEXT NOT NULL,
-            last_name TEXT NOT NULL,
-            phone TEXT NOT NULL,
-            email TEXT,
-            appointment_date TEXT NOT NULL,
-            appointment_time TEXT NOT NULL,
-            service_type TEXT NOT NULL,
-            symptoms TEXT,
-            status TEXT DEFAULT 'pending',
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )`);
-    }
-});
-
 // API Routes
 app.post('/api/appointments', (req, res) => {
     const { firstName, lastName, phone, email, appointmentDate, appointmentTime, serviceType, symptoms } = req.body;
-    const sql = `INSERT INTO appointments (first_name, last_name, phone, email, appointment_date, appointment_time, service_type, symptoms)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-    db.run(sql, [firstName, lastName, phone, email || null, appointmentDate, appointmentTime, serviceType, symptoms || null], 
-        function(err) {
-            if (err) return res.status(500).json({ success: false, error: err.message });
-            res.json({ success: true, data: { id: this.lastID } });
-        }
-    );
+    
+    const appointment = {
+        id: nextId++,
+        first_name: firstName,
+        last_name: lastName,
+        phone,
+        email,
+        appointment_date: appointmentDate,
+        appointment_time: appointmentTime,
+        service_type: serviceType,
+        symptoms,
+        status: 'pending',
+        created_at: new Date().toISOString()
+    };
+    
+    appointments.push(appointment);
+    res.json({ success: true, data: { id: appointment.id } });
 });
 
 app.get('/api/appointments', (req, res) => {
-    let sql = 'SELECT * FROM appointments WHERE 1=1';
-    const params = [];
-    if (req.query.date) { sql += ' AND appointment_date = ?'; params.push(req.query.date); }
-    if (req.query.status) { sql += ' AND status = ?'; params.push(req.query.status); }
-    sql += ' ORDER BY created_at DESC';
-    db.all(sql, params, (err, rows) => {
-        if (err) return res.status(500).json({ success: false, error: err.message });
-        res.json({ success: true, count: rows.length, data: rows });
-    });
+    let result = [...appointments];
+    
+    if (req.query.date) {
+        result = result.filter(a => a.appointment_date === req.query.date);
+    }
+    if (req.query.status) {
+        result = result.filter(a => a.status === req.query.status);
+    }
+    
+    res.json({ success: true, count: result.length, data: result });
 });
 
 app.get('/api/stats', (req, res) => {
-    db.get('SELECT COUNT(*) as total FROM appointments', (err, row) => {
-        if (err) return res.status(500).json({ success: false, error: err.message });
-        res.json({ success: true, data: { total: row.total, today: 0, pending: 0, confirmed: 0, completed: 0, thisMonth: 0 } });
+    res.json({ 
+        success: true, 
+        data: { 
+            total: appointments.length,
+            today: appointments.filter(a => a.appointment_date === new Date().toISOString().split('T')[0]).length,
+            pending: appointments.filter(a => a.status === 'pending').length,
+            confirmed: appointments.filter(a => a.status === 'confirmed').length,
+            completed: appointments.filter(a => a.status === 'completed').length,
+            thisMonth: appointments.filter(a => a.appointment_date.startsWith(new Date().toISOString().slice(0, 7))).length
+        } 
     });
 });
 
 app.patch('/api/appointments/:id/status', (req, res) => {
     const id = parseInt(req.params.id);
     const { status } = req.body;
-    const validStatuses = ['pending', 'confirmed', 'completed', 'cancelled', 'no-show'];
-    if (!status || !validStatuses.includes(status)) {
-        return res.status(400).json({ success: false, error: 'Invalid status' });
+    
+    const appointment = appointments.find(a => a.id === id);
+    if (!appointment) {
+        return res.status(404).json({ success: false, error: 'Not found' });
     }
-    db.run('UPDATE appointments SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [status, id], function(err) {
-        if (err) return res.status(500).json({ success: false, error: err.message });
-        if (this.changes === 0) return res.status(404).json({ success: false, error: 'Not found' });
-        res.json({ success: true, message: `Status updated to ${status}` });
-    });
+    
+    appointment.status = status;
+    res.json({ success: true, message: `Status updated to ${status}` });
 });
 
 app.delete('/api/appointments/:id', (req, res) => {
     const id = parseInt(req.params.id);
-    db.run('DELETE FROM appointments WHERE id = ?', [id], function(err) {
-        if (err) return res.status(500).json({ success: false, error: err.message });
-        if (this.changes === 0) return res.status(404).json({ success: false, error: 'Not found' });
-        res.json({ success: true, message: 'Deleted successfully' });
-    });
+    const index = appointments.findIndex(a => a.id === id);
+    
+    if (index === -1) {
+        return res.status(404).json({ success: false, error: 'Not found' });
+    }
+    
+    appointments.splice(index, 1);
+    res.json({ success: true, message: 'Deleted successfully' });
 });
 
 app.get('/api/search', (req, res) => {
     const { query } = req.query;
     if (!query) return res.status(400).json({ success: false, error: 'Search query required' });
-    const sql = `SELECT * FROM appointments WHERE first_name LIKE ? OR last_name LIKE ? OR phone LIKE ? OR email LIKE ? ORDER BY created_at DESC`;
-    const searchTerm = `%${query}%`;
-    db.all(sql, [searchTerm, searchTerm, searchTerm, searchTerm], (err, rows) => {
-        if (err) return res.status(500).json({ success: false, error: err.message });
-        res.json({ success: true, count: rows.length, data: rows });
-    });
+    
+    const searchTerm = query.toLowerCase();
+    const result = appointments.filter(a => 
+        a.first_name.toLowerCase().includes(searchTerm) ||
+        a.last_name.toLowerCase().includes(searchTerm) ||
+        a.phone.includes(searchTerm) ||
+        (a.email && a.email.toLowerCase().includes(searchTerm))
+    );
+    
+    res.json({ success: true, count: result.length, data: result });
 });
 
 app.listen(PORT, () => {
