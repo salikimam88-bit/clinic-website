@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Rajesh Sharma | Advanced Medical Care | Delhi NCR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        medical: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        },
+                        healing: {
+                            50: '#f0fdf4',
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-up': 'slideUp 0.6s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0fdf4 100%);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #0284c7 0%, #059669 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+        }
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background: linear-gradient(90deg, #0284c7, #059669);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0284c7;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 350px;
+        }
+        .toast.show {
+            transform: translateX(0);
+        }
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800 antialiased bg-white">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div class="flex items-center space-x-3">
+            <i id="toastIcon" class="fas fa-check-circle text-2xl"></i>
+            <div>
+                <h4 id="toastTitle" class="font-bold text-gray-900">Success</h4>
+                <p id="toastMessage" class="text-sm text-gray-600">Operation completed</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-medical-600 to-healing-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">Dr. Rajesh Sharma</h1>
+                        <p class="text-xs text-gray-500">MBBS, MD (Medicine)</p>
+                    </div>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="nav-link text-gray-700 hover:text-medical-600 font-medium transition-colors">Home</a>
+                    <a href="#about" class="nav-link text-gray-700 hover:text-medical-600 font-medium transition-colors">About</a>
+                    <a href="#services" class="nav-link text-gray-700 hover:text-medical-600 font-medium transition-colors">Services</a>
+                    <a href="#appointment" class="nav-link text-gray-700 hover:text-medical-600 font-medium transition-colors">Book Appointment</a>
+                    <a href="#contact" class="nav-link text-gray-700 hover:text-medical-600 font-medium transition-colors">Contact</a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <a href="https://wa.me/919876543210" target="_blank" class="hidden sm:flex items-center space-x-2 bg-healing-500 hover:bg-healing-600 text-white px-5 py-2.5 rounded-full font-medium transition-all transform hover:scale-105 shadow-lg hover:shadow-xl">
+                        <i class="fab fa-whatsapp text-lg"></i>
+                        <span>WhatsApp</span>
+                    </a>
+                    <button id="mobile-menu-btn" class="md:hidden text-gray-700 hover:text-medical-600 focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full shadow-xl">
+            <div class="px-4 pt-2 pb-6 space-y-2">
+                <a href="#home" class="block px-3 py-3 text-gray-700 hover:bg-medical-50 hover:text-medical-600 rounded-lg font-medium transition-colors">Home</a>
+                <a href="#about" class="block px-3 py-3 text-gray-700 hover:bg-medical-50 hover:text-medical-600 rounded-lg font-medium transition-colors">About Doctor</a>
+                <a href="#services" class="block px-3 py-3 text-gray-700 hover:bg-medical-50 hover:text-medical-600 rounded-lg font-medium transition-colors">Services</a>
+                <a href="#appointment" class="block px-3 py-3 text-gray-700 hover:bg-medical-50 hover:text-medical-600 rounded-lg font-medium transition-colors">Book Appointment</a>
+                <a href="#contact" class="block px-3 py-3 text-gray-700 hover:bg-medical-50 hover:text-medical-600 rounded-lg font-medium transition-colors">Contact</a>
+                <a href="https://wa.me/919876543210" target="_blank" class="flex items-center justify-center space-x-2 bg-healing-500 text-white px-5 py-3 rounded-lg font-medium mt-4">
+                    <i class="fab fa-whatsapp text-lg"></i>
+                    <span>Chat on WhatsApp</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden hero-gradient">
+        <div class="absolute inset-0 opacity-30">
+            <div class="absolute top-20 left-10 w-72 h-72 bg-medical-200 rounded-full mix-blend-multiply filter blur-xl animate-pulse-slow"></div>
+            <div class="absolute top-40 right-10 w-72 h-72 bg-healing-200 rounded-full mix-blend-multiply filter blur-xl animate-pulse-slow" style="animation-delay: 2s;"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8 animate-slide-up">
+                    <div class="inline-flex items-center space-x-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full border border-medical-100 shadow-sm cursor-pointer hover:shadow-md transition-all" onclick="checkTodayAppointments()">
+                        <span class="flex h-2 w-2 rounded-full bg-healing-500 animate-pulse"></span>
+                        <span class="text-sm font-medium text-medical-700" id="todayCount">Click to see today's appointments</span>
+                    </div>
+                    
+                    <h1 class="text-4xl lg:text-6xl font-serif font-bold leading-tight text-gray-900">
+                        Expert Medical Care with <span class="text-gradient">Compassion & Precision</span>
+                    </h1>
+                    
+                    <p class="text-lg text-gray-600 leading-relaxed max-w-lg">
+                        Dr. Rajesh Sharma brings over 15 years of experience in internal medicine and preventive healthcare. Providing personalized treatment plans for you and your family in Delhi NCR.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#appointment" class="inline-flex items-center justify-center space-x-2 bg-medical-600 hover:bg-medical-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-medical-500/30">
+                            <i class="far fa-calendar-check"></i>
+                            <span>Book Appointment</span>
+                        </a>
+                        <a href="tel:+919876543210" class="inline-flex items-center justify-center space-x-2 bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-200 px-8 py-4 rounded-full font-semibold text-lg transition-all">
+                            <i class="fas fa-phone-alt text-medical-600"></i>
+                            <span>Emergency Call</span>
+                        </a>
+                    </div>
+
+                    <div class="flex items-center space-x-8 pt-4">
+                        <div>
+                            <p class="text-3xl font-bold text-gray-900">15+</p>
+                            <p class="text-sm text-gray-500">Years Experience</p>
+                        </div>
+                        <div class="h-12 w-px bg-gray-300"></div>
+                        <div>
+                            <p class="text-3xl font-bold text-gray-900" id="totalPatients">0</p>
+                            <p class="text-sm text-gray-500">Patients Treated</p>
+                        </div>
+                        <div class="h-12 w-px bg-gray-300"></div>
+                        <div>
+                            <p class="text-3xl font-bold text-gray-900">4.9</p>
+                            <p class="text-sm text-gray-500">Google Rating</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative lg:h-[600px] flex items-center justify-center">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-medical-100 to-healing-100 rounded-[3rem] transform rotate-3 opacity-50"></div>
+                    <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&auto=format&fit=crop&q=80" alt="Dr. Rajesh Sharma" class="relative z-10 w-full max-w-md rounded-[2rem] shadow-2xl object-cover h-[500px] animate-float border-8 border-white">
+                    
+                    <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl z-20 animate-slide-up" style="animation-delay: 0.3s;">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-healing-100 rounded-full flex items-center justify-center text-healing-600">
+                                <i class="fas fa-certificate text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-900">Board Certified</p>
+                                <p class="text-sm text-gray-500">MCI Registered</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="absolute top-10 -right-6 bg-white p-4 rounded-2xl shadow-xl z-20 animate-slide-up" style="animation-delay: 0.5s;">
+                        <div class="flex items-center space-x-2">
+                            <div class="flex text-yellow-400 text-sm">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="font-bold text-gray-900">4.9</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Based on 500+ reviews</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Banner -->
+    <div class="bg-medical-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div class="space-y-2">
+                    <i class="fas fa-user-md text-3xl text-medical-400 mb-2"></i>
+                    <p class="text-3xl font-bold">15+</p>
+                    <p class="text-medical-200 text-sm">Years Experience</p>
+                </div>
+                <div class="space-y-2">
+                    <i class="fas fa-smile text-3xl text-healing-400 mb-2"></i>
+                    <p class="text-3xl font-bold" id="statTotal">0</p>
+                    <p class="text-medical-200 text-sm">Happy Patients</p>
+                </div>
+                <div class="space-y-2">
+                    <i class="fas fa-award text-3xl text-yellow-400 mb-2"></i>
+                    <p class="text-3xl font-bold">25+</p>
+                    <p class="text-medical-200 text-sm">Awards Won</p>
+                </div>
+                <div class="space-y-2">
+                    <i class="fas fa-hospital text-3xl text-pink-400 mb-2"></i>
+                    <p class="text-3xl font-bold">3</p>
+                    <p class="text-medical-200 text-sm">Clinic Locations</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 lg:py-32 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="relative">
+                    <div class="absolute -inset-4 bg-gradient-to-r from-medical-100 to-healing-100 rounded-[2rem] transform -rotate-2"></div>
+                    <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=80" alt="Medical consultation" class="relative rounded-[2rem] shadow-2xl w-full object-cover h-[500px]">
+                    
+                    <div class="absolute -bottom-8 -right-8 bg-medical-600 text-white p-8 rounded-2xl shadow-xl max-w-xs hidden lg:block">
+                        <p class="text-4xl font-serif font-bold mb-2">"Your health is my priority"</p>
+                        <p class="text-medical-100">- Dr. Rajesh Sharma</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="inline-block px-4 py-2 bg-medical-50 text-medical-700 rounded-full text-sm font-semibold tracking-wide uppercase">
+                        About Doctor
+                    </div>
+                    <h2 class="text-3xl lg:text-5xl font-serif font-bold text-gray-900 leading-tight">
+                        Dedicated to Providing <span class="text-gradient">Exceptional Healthcare</span>
+                    </h2>
+                    <p class="text-lg text-gray-600 leading-relaxed">
+                        Dr. Rajesh Sharma is a distinguished physician with expertise in internal medicine, diabetes management, and preventive healthcare. With an MBBS from AIIMS Delhi and MD in Medicine from PGI Chandigarh, he has dedicated his career to patient-centered care.
+                    </p>
+                    <p class="text-lg text-gray-600 leading-relaxed">
+                        His approach combines cutting-edge medical knowledge with compassionate care, ensuring every patient receives personalized treatment. He believes in preventive medicine and educating patients about their health conditions.
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-6 pt-6">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-10 h-10 rounded-lg bg-medical-100 flex items-center justify-center text-medical-600 flex-shrink-0">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">Education</h4>
+                                <p class="text-sm text-gray-600">MBBS (AIIMS), MD Medicine (PGI)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="w-10 h-10 rounded-lg bg-healing-100 flex items-center justify-center text-healing-600 flex-shrink-0">
+                                <i class="fas fa-stethoscope"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">Specialization</h4>
+                                <p class="text-sm text-gray-600">Internal Medicine & Diabetes</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 flex-shrink-0">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">Certifications</h4>
+                                <p class="text-sm text-gray-600">MCI, NABH Accredited</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 flex-shrink-0">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">Languages</h4>
+                                <p class="text-sm text-gray-600">English, Hindi, Punjabi</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 lg:py-32 bg-gray-50 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-medical-50 to-transparent"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-block px-4 py-2 bg-medical-100 text-medical-700 rounded-full text-sm font-semibold tracking-wide uppercase mb-4">
+                    Our Services
+                </div>
+                <h2 class="text-3xl lg:text-5xl font-serif font-bold text-gray-900 mb-6">
+                    Comprehensive <span class="text-gradient">Medical Services</span>
+                </h2>
+                <p class="text-lg text-gray-600">
+                    We offer a wide range of medical services using state-of-the-art technology and evidence-based treatment protocols.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('general')">
+                    <div class="w-16 h-16 bg-medical-50 rounded-2xl flex items-center justify-center text-medical-600 text-2xl mb-6 group-hover:bg-medical-600 group-hover:text-white transition-all duration-300">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">General Medicine</h3>
+                    <p class="text-gray-600 mb-4">Comprehensive diagnosis and treatment of acute and chronic illnesses, fever management, and infections.</p>
+                    <span class="inline-flex items-center text-medical-600 font-semibold hover:text-medical-700 transition-colors">
+                        Book Now <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                    </span>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('diabetes')">
+                    <div class="w-16 h-16 bg-healing-50 rounded-2xl flex items-center justify-center text-healing-600 text-2xl mb-6 group-hover:bg-healing-600 group-hover:text-white transition-all duration-300">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Diabetes Care</h3>
+                    <p class="text-gray-600 mb-4">Specialized diabetes management, blood sugar monitoring, and lifestyle modification programs.</p>
+                    <span class="inline-flex items-center text-medical-600 font-semibold hover:text-medical-700 transition-colors">
+                        Book Now <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                    </span>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('respiratory')">
+                    <div class="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 text-2xl mb-6 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300">
+                        <i class="fas fa-lungs"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Respiratory Care</h3>
+                    <p class="text-gray-600 mb-4">Treatment of asthma, COPD, allergies, and other respiratory conditions with modern therapies.</p>
+                    <span class="inline-flex items-center text-medical-600 font-semibold hover:text-medical-700 transition-colors">
+                        Book Now <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                    </span>
+                </div>
+
+                <!-- Service 4 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('cardiac')">
+                    <div class="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 text-2xl mb-6 group-hover:bg-orange-600 group-hover:text-white transition-all duration-300">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Cardiac Health</h3>
+                    <p class="text-gray-600 mb-4">Hypertension management, cardiac risk assessment, and preventive cardiology services.</p>
+                    <span class="inline-flex items-center text-medical-600 font-semibold hover:text-medical-700 transition-colors">
+                        Book Now <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                    </span>
+                </div>
+
+                <!-- Service 5 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('health-check')">
+                    <div class="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center text-pink-600 text-2xl mb-6 group-hover:bg-pink-600 group-hover:text-white transition-all duration-300">
+                        <i class="fas fa-vial"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Health Checkups</h3>
+                    <p class="text-gray-600 mb-4">Comprehensive full-body checkups, preventive health screenings, and wellness packages.</p>
+                    <span class="inline-flex items-center text-medical-600 font-semibold hover:text-medical-700 transition-colors">
+                        Book Now <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                    </span>
+                </div>
+
+                <!-- Service 6 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('follow-up')">
+                    <div class="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600 text-2xl mb-6 group-hover:bg-teal-600 group-hover:text-white transition-all duration-300">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Follow-up Visit</h3>
+                    <p class="text-gray-600 mb-4">Continue your treatment plan with regular follow-up consultations and progress monitoring.</p>
+                    <span class="inline-flex items-center text-medical-600 font-semibold hover:text-medical-700 transition-colors">
+                        Book Now <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Appointment Section -->
+    <section id="appointment" class="py-20 lg:py-32 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <div class="inline-block px-4 py-2 bg-healing-50 text-healing-700 rounded-full text-sm font-semibold tracking-wide uppercase">
+                        Book Appointment
+                    </div>
+                    <h2 class="text-3xl lg:text-5xl font-serif font-bold text-gray-900 leading-tight">
+                        Book Your <span class="text-gradient">Consultation</span> Today
+                    </h2>
+                    <p class="text-lg text-gray-600">
+                        Schedule your appointment online or via WhatsApp. We offer flexible timing including evening and weekend slots for your convenience.
+                    </p>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors" onclick="checkTodayAppointments()">
+                            <div class="w-12 h-12 bg-medical-100 rounded-full flex items-center justify-center text-medical-600 flex-shrink-0">
+                                <i class="far fa-clock"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-bold text-gray-900">Working Hours</h4>
+                                        <p class="text-gray-600">Mon - Sat: 9:00 AM - 8:00 PM</p>
+                                        <p class="text-gray-600">Sunday: 10:00 AM - 2:00 PM</p>
+                                    </div>
+                                    <span id="todaySlots" class="text-xs bg-medical-100 text-medical-700 px-2 py-1 rounded-full">Check availability</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="w-12 h-12 bg-healing-100 rounded-full flex items-center justify-center text-healing-600 flex-shrink-0">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">Main Clinic</h4>
+                                <p class="text-gray-600">Sector 18, Noida, Delhi NCR - 201301</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 flex-shrink-0">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">Emergency Contact</h4>
+                                <p class="text-gray-600">+91 98765 43210 (24/7 Available)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-2xl p-8 lg:p-10 border border-gray-100">
+                    <form id="bookingForm" class="space-y-6">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                                <input type="text" id="firstName" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-medical-500 focus:ring-2 focus:ring-medical-200 outline-none transition-all" placeholder="Salik Imam">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                                <input type="text" id="lastName" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-medical-500 focus:ring-2 focus:ring-medical-200 outline-none transition-all" placeholder="Khan">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                            <input type="tel" id="phone" required pattern="[0-9]{10}" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-medical-500 focus:ring-2 focus:ring-medical-200 outline-none transition-all" placeholder="9876543210">
+                            <p class="text-xs text-gray-500 mt-1">10 digit Indian mobile number</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                            <input type="email" id="email" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-medical-500 focus:ring-2 focus:ring-medical-200 outline-none transition-all" placeholder="john@example.com">
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Date *</label>
+                                <input type="date" id="appointmentDate" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-medical-500 focus:ring-2 focus:ring-medical-200 outline-none transition-all">
+                                <p class="text-xs text-gray-500 mt-1" id="dateAvailability"></p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Time *</label>
+                                <select id="appointmentTime" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-medical-500 focus:ring-2 focus:ring-medical-200 outline-none transition-all">
+                                    <option value="">Select Time</option>
+                                    <option value="morning">Morning (9AM - 12PM)</option>
+                                    <option value="afternoon">Afternoon (12PM - 4PM)</option>
+                                    <option value="evening">Evening (4PM - 8PM)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Service Required *</label>
+                            <select id="serviceType" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-medical-500 focus:ring-2 focus:ring-medical-200 outline-none transition-all">
+                                <option value="">Select Service</option>
+                                <option value="general">General Consultation</option>
+                                <option value="diabetes">Diabetes Management</option>
+                                <option value="cardiac">Cardiac Checkup</option>
+                                <option value="respiratory">Respiratory Care</option>
+                                <option value="health-check">Full Body Checkup</option>
+                                <option value="follow-up">Follow-up Visit</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Symptoms / Notes</label>
+                            <textarea id="symptoms" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-medical-500 focus:ring-2 focus:ring-medical-200 outline-none transition-all resize-none" placeholder="Briefly describe your symptoms..."></textarea>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-medical-600 to-medical-700 hover:from-medical-700 hover:to-medical-800 text-white font-bold py-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span id="btnText">Confirm Appointment</span>
+                            <i id="btnIcon" class="far fa-calendar-check"></i>
+                        </button>
+
+                        <p class="text-center text-sm text-gray-500">
+                            <i class="fas fa-lock mr-1"></i> Your information is secure and confidential
+                        </p>
+                    </form>
+
+                    <!-- Success Message (Hidden by default) -->
+                    <div id="successMessage" class="hidden text-center py-12">
+                        <div class="w-20 h-20 bg-healing-100 rounded-full flex items-center justify-center text-healing-600 text-3xl mx-auto mb-6 animate-bounce">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Appointment Booked!</h3>
+                        <p class="text-gray-600 mb-2">Your appointment ID: <strong id="appointmentId" class="text-medical-600 text-xl">#</strong></p>
+                        <p class="text-gray-600 mb-6">We will confirm your appointment shortly via SMS/WhatsApp.</p>
+                        
+                        <div class="bg-gray-50 rounded-xl p-4 mb-6 text-left">
+                            <p class="text-sm text-gray-600"><strong>Patient:</strong> <span id="successName"></span></p>
+                            <p class="text-sm text-gray-600"><strong>Date:</strong> <span id="successDate"></span></p>
+                            <p class="text-sm text-gray-600"><strong>Time:</strong> <span id="successTime"></span></p>
+                            <p class="text-sm text-gray-600"><strong>Service:</strong> <span id="successService"></span></p>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-4">
+                            <button onclick="resetForm()" class="px-6 py-3 border-2 border-medical-600 text-medical-600 rounded-xl font-semibold hover:bg-medical-50 transition-colors">
+                                Book Another
+                            </button>
+                            <a id="whatsappLink" href="#" target="_blank" class="inline-flex items-center justify-center space-x-2 bg-healing-500 hover:bg-healing-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
+                                <i class="fab fa-whatsapp text-lg"></i>
+                                <span>Send WhatsApp</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 lg:py-32 bg-medical-900 text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-0 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-medical-400 rounded-full mix-blend-overlay filter blur-3xl"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-16">
+                <div class="space-y-8">
+                    <div class="inline-block px-4 py-2 bg-white/10 backdrop-blur rounded-full text-sm font-semibold tracking-wide uppercase">
+                        Get In Touch
+                    </div>
+                    <h2 class="text-3xl lg:text-5xl font-serif font-bold leading-tight">
+                        We're Here to <span class="text-medical-300">Help You</span>
+                    </h2>
+                    <p class="text-lg text-gray-300">
+                        Have questions? Reach out to us via phone, email, or WhatsApp. Our team is available 24/7 for emergencies.
+                    </p>
+
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-medical-300 flex-shrink-0 backdrop-blur">
+                                <i class="fas fa-map-marker-alt text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-1">Main Clinic</h4>
+                                <p class="text-gray-300">Plot 24, Sector 18, Noida<br>Uttar Pradesh 201301, India</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-medical-300 flex-shrink-0 backdrop-blur">
+                                <i class="fas fa-phone-alt text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-1">Phone</h4>
+                                <p class="text-gray-300">+91 98765 43210 (Appointment)<br>+91 98765 43211 (Emergency)</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-medical-300 flex-shrink-0 backdrop-blur">
+                                <i class="fas fa-envelope text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-1">Email</h4>
+                                <p class="text-gray-300">dr.rajesh@wellnessclinic.in<br>appointments@wellnessclinic.in</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4 pt-4">
+                        <a href="#" class="w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all hover:scale-110">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all hover:scale-110">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all hover:scale-110">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://wa.me/919876543210" class="w-12 h-12 bg-healing-500 hover:bg-healing-600 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg">
+                            <i class="fab fa-whatsapp text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-lg rounded-3xl p-8 border border-white/10">
+                    <h3 class="text-2xl font-bold mb-6">Send us a Message</h3>
+                    <form id="contactForm" class="space-y-4">
+                        <div>
+                            <input type="text" id="contactName" placeholder="Your Name" required class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:border-medical-400 focus:ring-2 focus:ring-medical-400/20 outline-none transition-all">
+                        </div>
+                        <div>
+                            <input type="email" id="contactEmail" placeholder="Email Address" required class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:border-medical-400 focus:ring-2 focus:ring-medical-400/20 outline-none transition-all">
+                        </div>
+                        <div>
+                            <textarea id="contactMessage" rows="4" placeholder="Your Message" required class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:border-medical-400 focus:ring-2 focus:ring-medical-400/20 outline-none transition-all resize-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-medical-500 hover:bg-medical-600 text-white font-bold py-3 rounded-xl transition-all transform hover:scale-[1.02] flex items-center justify-center space-x-2">
+                            <span>Send Message</span>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <div class="h-96 w-full bg-gray-200 relative">
+        <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3502.0664400967666!2d77.3262893144066!3d28.57081399344415!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce5b7a7e25cdb%3A0x92f5e3e8a5a1b472!2sSector%2018%2C%20Noida%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1645789012345!5m2!1sen!2sin" 
+            width="100%" 
+            height="100%" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade"
+            class="absolute inset-0">
+        </iframe>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-2 text-white">
+                        <div class="w-10 h-10 bg-gradient-to-br from-medical-600 to-healing-600 rounded-xl flex items-center justify-center font-bold text-xl">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg">Dr. Rajesh Sharma</h3>
+                            <p class="text-xs text-gray-400">MBBS, MD (Medicine)</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-400">
+                        Providing quality healthcare services with compassion and excellence since 2008.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#home" class="hover:text-medical-400 transition-colors">Home</a></li>
+                        <li><a href="#about" class="hover:text-medical-400 transition-colors">About Doctor</a></li>
+                        <li><a href="#services" class="hover:text-medical-400 transition-colors">Services</a></li>
+                        <li><a href="#appointment" class="hover:text-medical-400 transition-colors">Book Appointment</a></li>
+                        <li><a href="/admin.html" class="hover:text-medical-400 transition-colors text-medical-400">Admin Panel</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-4">Services</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-medical-400 transition-colors">General Medicine</a></li>
+                        <li><a href="#" class="hover:text-medical-400 transition-colors">Diabetes Care</a></li>
+                        <li><a href="#" class="hover:text-medical-400 transition-colors">Cardiac Health</a></li>
+                        <li><a href="#" class="hover:text-medical-400 transition-colors">Health Checkups</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-medical-400 transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-medical-400 transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-medical-400 transition-colors">Patient Rights</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm text-gray-500">
+                    © 2024 Dr. Rajesh Sharma Clinic. All rights reserved.
+                </p>
+                <p class="text-sm text-gray-500 mt-2 md:mt-0">
+                    Designed with <i class="fas fa-heart text-red-500 mx-1"></i> for better healthcare
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/919876543210" target="_blank" class="fixed bottom-6 right-6 bg-healing-500 hover:bg-healing-600 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all z-50 animate-bounce" style="animation-duration: 3s;">
+        <i class="fab fa-whatsapp text-3xl"></i>
+        <span class="absolute -top-2 -right-2 flex h-4 w-4">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-4 w-4 bg-red-500"></span>
+        </span>
+    </a>
+
+    <script>
+        // API Configuration
+        const API_URL = window.location.origin + '/api';
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeDateInput();
+            loadStats();
+            setupEventListeners();
+        });
+
+        // Setup all event listeners
+        function setupEventListeners() {
+            // Mobile menu
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Close mobile menu when clicking on a link
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // Navbar scroll effect
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('shadow-md');
+                } else {
+                    navbar.classList.remove('shadow-md');
+                }
+            });
+
+            // Form submissions
+            document.getElementById('bookingForm').addEventListener('submit', handleBookingSubmit);
+            document.getElementById('contactForm').addEventListener('submit', handleContactSubmit);
+
+            // Date change listener for availability check
+            document.getElementById('appointmentDate').addEventListener('change', checkDateAvailability);
+
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        }
+
+        // Initialize date input with min date (today)
+        function initializeDateInput() {
+            const dateInput = document.getElementById('appointmentDate');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+            
+            // Set default to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            dateInput.value = tomorrow.toISOString().split('T')[0];
+        }
+
+        // Load statistics from database
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_URL}/stats`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update stats in banner
+                    document.getElementById('statTotal').textContent = result.data.total || 0;
+                    document.getElementById('totalPatients').textContent = (result.data.total || 0) + '+';
+                    
+                    // Store stats for later use
+                    window.clinicStats = result.data;
+                }
+            } catch (error) {
+                console.log('Stats not available yet:', error);
+            }
+        }
+
+        // Check today's appointments
+        async function checkTodayAppointments() {
+            const today = new Date().toISOString().split('T')[0];
+            try {
+                const response = await fetch(`${API_URL}/appointments?date=${today}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const count = result.data.length;
+                    const slotText = count >= 10 ? 'Slots full' : `${10 - count} slots available`;
+                    document.getElementById('todaySlots').textContent = slotText;
+                    document.getElementById('todaySlots').className = count >= 10 ? 
+                        'text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full' : 
+                        'text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full';
+                    
+                    showToast('info', `Today: ${count} appointments booked`);
+                }
+            } catch (error) {
+                console.log('Could not check availability');
+            }
+        }
+
+        // Check date availability
+        async function checkDateAvailability() {
+            const date = document.getElementById('appointmentDate').value;
+            if (!date) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/appointments?date=${date}`);
+                const result = await response.json();
+                
+                const availabilityEl = document.getElementById('dateAvailability');
+                if (result.success) {
+                    const count = result.data.length;
+                    if (count >= 15) {
+                        availabilityEl.textContent = '⚠️ High booking volume on this date';
+                        availabilityEl.className = 'text-xs text-orange-600 mt-1';
+                    } else if (count >= 10) {
+                        availabilityEl.textContent = '⚡ Limited slots remaining';
+                        availabilityEl.className = 'text-xs text-yellow-600 mt-1';
+                    } else {
+                        availabilityEl.textContent = '✅ Good availability';
+                        availabilityEl.className = 'text-xs text-green-600 mt-1';
+                    }
+                }
+            } catch (error) {
+                console.log('Could not check date availability');
+            }
+        }
+
+        // Handle booking form submission
+        async function handleBookingSubmit(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnIcon = document.getElementById('btnIcon');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            btnText.textContent = 'Booking...';
+            btnIcon.className = 'loading-spinner ml-2';
+            
+            // Collect form data
+            const formData = {
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                appointmentDate: document.getElementById('appointmentDate').value,
+                appointmentTime: document.getElementById('appointmentTime').value,
+                serviceType: document.getElementById('serviceType').value,
+                symptoms: document.getElementById('symptoms').value.trim()
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/appointments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Show success message
+                    showSuccessMessage(result.data, formData);
+                    showToast('success', 'Appointment booked successfully!');
+                    
+                    // Refresh stats
+                    loadStats();
+                } else {
+                    throw new Error(result.error || 'Failed to book appointment');
+                }
+            } catch (error) {
+                console.error('Booking error:', error);
+                showToast('error', error.message || 'Network error. Please try again.');
+                
+                // Reset button
+                submitBtn.disabled = false;
+                btnText.textContent = 'Confirm Appointment';
+                btnIcon.className = 'far fa-calendar-check ml-2';
+            }
+        }
+
+        // Show success message
+        function showSuccessMessage(data, formData) {
+            const bookingForm = document.getElementById('bookingForm');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Populate success details
+            document.getElementById('appointmentId').textContent = '#' + data.id;
+            document.getElementById('successName').textContent = formData.firstName + ' ' + formData.lastName;
+            document.getElementById('successDate').textContent = new Date(formData.appointmentDate).toLocaleDateString('en-IN', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+            
+            const timeMap = {
+                'morning': 'Morning (9AM - 12PM)',
+                'afternoon': 'Afternoon (12PM - 4PM)',
+                'evening': 'Evening (4PM - 8PM)'
+            };
+            document.getElementById('successTime').textContent = timeMap[formData.appointmentTime];
+            
+            const serviceMap = {
+                'general': 'General Consultation',
+                'diabetes': 'Diabetes Management',
+                'cardiac': 'Cardiac Checkup',
+                'respiratory': 'Respiratory Care',
+                'health-check': 'Full Body Checkup',
+                'follow-up': 'Follow-up Visit'
+            };
+            document.getElementById('successService').textContent = serviceMap[formData.serviceType];
+            
+            // Set WhatsApp link
+            const message = `Hello Dr. Sharma, I have booked appointment #${data.id} for ${serviceMap[formData.serviceType]} on ${formData.appointmentDate}. Name: ${formData.firstName} ${formData.lastName}`;
+            document.getElementById('whatsappLink').href = `https://wa.me/919876543210?text=${encodeURIComponent(message)}`;
+            
+            // Hide form, show success
+            bookingForm.style.display = 'none';
+            successMessage.classList.remove('hidden');
+            successMessage.classList.add('animate-slide-up');
+            
+            // Scroll to success message
+            successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Reset form
+        function resetForm() {
+            document.getElementById('bookingForm').reset();
+            document.getElementById('successMessage').classList.add('hidden');
+            document.getElementById('bookingForm').style.display = 'block';
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('btnText').textContent = 'Confirm Appointment';
+            document.getElementById('btnIcon').className = 'far fa-calendar-check';
+            document.getElementById('dateAvailability').textContent = '';
+            
+            // Reset date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('appointmentDate').value = tomorrow.toISOString().split('T')[0];
+        }
+
+        // Handle contact form
+        async function handleContactSubmit(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const message = document.getElementById('contactMessage').value;
+            
+            // For now, just open WhatsApp with the message
+            const fullMessage = `Hello Dr. Sharma, I'm ${name} (${email}). ${message}`;
+            window.open(`https://wa.me/919876543210?text=${encodeURIComponent(fullMessage)}`, '_blank');
+            
+            showToast('success', 'Opening WhatsApp with your message...');
+            document.getElementById('contactForm').reset();
+        }
+
+        // Select service from cards
+        function selectService(serviceType) {
+            document.getElementById('serviceType').value = serviceType;
+            document.getElementById('appointment').scrollIntoView({ behavior: 'smooth' });
+            
+            // Highlight the select
+            document.getElementById('serviceType').classList.add('ring-2', 'ring-medical-500');
+            setTimeout(() => {
+                document.getElementById('serviceType').classList.remove('ring-2', 'ring-medical-500');
+            }, 1000);
+        }
+
+        // Toast notification system
+        function showToast(type, message) {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const title = document.getElementById('toastTitle');
+            const msg = document.getElementById('toastMessage');
+            
+            toast.className = 'toast ' + type;
+            
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle text-2xl text-healing-500';
+                title.textContent = 'Success';
+            } else if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle text-2xl text-red-500';
+                title.textContent = 'Error';
+            } else {
+                icon.className = 'fas fa-info-circle text-2xl text-medical-500';
+                title.textContent = 'Info';
+            }
+            
+            msg.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-slide-up');
+                    entry.target.style.opacity = '1';
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements
+        document.querySelectorAll('.card-hover').forEach((el) => {
+            el.style.opacity = '0';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

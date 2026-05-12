@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic Admin - Appointment Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        medical: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        },
+                        healing: {
+                            50: '#f0fdf4',
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-confirmed { background-color: #d1fae5; color: #065f46; }
+        .status-completed { background-color: #dbeafe; color: #1e40af; }
+        .status-cancelled { background-color: #fee2e2; color: #991b1b; }
+        .status-no-show { background-color: #f3f4f6; color: #374151; }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0284c7;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-medical-900 text-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-heartbeat text-2xl text-medical-400"></i>
+                    <div>
+                        <h1 class="text-xl font-bold">Dr. Rajesh Sharma Clinic</h1>
+                        <p class="text-xs text-gray-400">Admin Dashboard</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-sm text-gray-300 hover:text-white transition-colors">
+                        <i class="fas fa-home mr-1"></i> Back to Website
+                    </a>
+                    <span id="currentDate" class="text-sm text-gray-300"></span>
+                    <button onclick="refreshData()" class="bg-medical-700 hover:bg-medical-600 px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Total</p>
+                            <p class="text-2xl font-bold text-gray-900" id="stat-total">-</p>
+                        </div>
+                        <i class="fas fa-calendar text-medical-400 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Today</p>
+                            <p class="text-2xl font-bold text-medical-600" id="stat-today">-</p>
+                        </div>
+                        <i class="fas fa-clock text-medical-400 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Pending</p>
+                            <p class="text-2xl font-bold text-yellow-600" id="stat-pending">-</p>
+                        </div>
+                        <i class="fas fa-hourglass-half text-yellow-400 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Confirmed</p>
+                            <p class="text-2xl font-bold text-green-600" id="stat-confirmed">-</p>
+                        </div>
+                        <i class="fas fa-check-circle text-green-400 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Completed</p>
+                            <p class="text-2xl font-bold text-blue-600" id="stat-completed">-</p>
+                        </div>
+                        <i class="fas fa-check-double text-blue-400 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">This Month</p>
+                            <p class="text-2xl font-bold text-purple-600" id="stat-thisMonth">-</p>
+                        </div>
+                        <i class="fas fa-chart-line text-purple-400 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <div class="grid md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                        <div class="relative">
+                            <input type="text" id="searchInput" placeholder="Name, phone, email..." 
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-500 focus:border-medical-500 outline-none"
+                                onkeyup="handleSearch()">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <select id="statusFilter" onchange="loadAppointments()" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                            <option value="no-show">No Show</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">From Date</label>
+                        <input type="date" id="fromDate" onchange="loadAppointments()"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">To Date</label>
+                        <input type="date" id="toDate" onchange="loadAppointments()"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-500 outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-gray-900">Appointments</h2>
+                    <span id="appointmentCount" class="text-sm text-gray-500">Loading...</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTable" class="divide-y divide-gray-200">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="loadingState" class="hidden p-12 text-center">
+                    <div class="loading-spinner mx-auto mb-4"></div>
+                    <p class="text-gray-500">Loading appointments...</p>
+                </div>
+                <div id="emptyState" class="hidden p-12 text-center">
+                    <i class="fas fa-inbox text-4xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500">No appointments found</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="statusModal" class="modal">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-bold mb-4">Update Status</h3>
+            <p class="text-gray-600 mb-4">Appointment #<span id="modalAppointmentId"></span></p>
+            <select id="newStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 outline-none focus:ring-2 focus:ring-medical-500">
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="no-show">No Show</option>
+            </select>
+            <div class="flex space-x-3">
+                <button onclick="closeStatusModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+                <button onclick="confirmStatusUpdate()" class="flex-1 px-4 py-2 bg-medical-600 text-white rounded-lg hover:bg-medical-700 transition-colors">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let currentAppointmentId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDate();
+            loadStats();
+            loadAppointments();
+            
+            // Set default date range (today to next 30 days)
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fromDate').value = today;
+        });
+
+        function updateDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', options);
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_URL}/stats`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    Object.keys(result.data).forEach(key => {
+                        const el = document.getElementById(`stat-${key}`);
+                        if (el) el.textContent = result.data[key];
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+
+        async function loadAppointments() {
+            const table = document.getElementById('appointmentsTable');
+            const loading = document.getElementById('loadingState');
+            const empty = document.getElementById('emptyState');
+            const count = document.getElementById('appointmentCount');
+            
+            table.innerHTML = '';
+            loading.classList.remove('hidden');
+            empty.classList.add('hidden');
+
+            const status = document.getElementById('statusFilter').value;
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+
+            let url = `${API_URL}/appointments?`;
+            if (status) url += `status=${status}&`;
+            if (fromDate) url += `fromDate=${fromDate}&`;
+            if (toDate) url += `toDate=${toDate}`;
+
+            try {
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                loading.classList.add('hidden');
+                
+                if (result.success && result.data.length > 0) {
+                    count.textContent = `${result.data.length} appointments found`;
+                    result.data.forEach(apt => {
+                        table.appendChild(createAppointmentRow(apt));
+                    });
+                } else {
+                    empty.classList.remove('hidden');
+                    count.textContent = '0 appointments found';
+                }
+            } catch (error) {
+                loading.classList.add('hidden');
+                empty.classList.remove('hidden');
+                count.textContent = 'Error loading data';
+                console.error('Failed to load appointments:', error);
+            }
+        }
+
+        function createAppointmentRow(apt) {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-gray-50 transition-colors';
+            
+            const statusClass = `status-${apt.status}`;
+            const timeDisplay = apt.appointment_time === 'morning' ? 'Morning (9AM-12PM)' :
+                               apt.appointment_time === 'afternoon' ? 'Afternoon (12PM-4PM)' : 'Evening (4PM-8PM)';
+            
+            tr.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#${apt.id}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">${apt.first_name} ${apt.last_name}</div>
+                    <div class="text-xs text-gray-500">Booked: ${new Date(apt.created_at).toLocaleDateString('en-IN')}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900"><i class="fas fa-phone text-xs mr-1"></i> ${apt.phone}</div>
+                    ${apt.email ? `<div class="text-xs text-gray-500"><i class="fas fa-envelope text-xs mr-1"></i> ${apt.email}</div>` : ''}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">${new Date(apt.appointment_date).toLocaleDateString('en-IN')}</div>
+                    <div class="text-xs text-gray-500">${timeDisplay}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">${apt.service_type.replace('-', ' ')}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusClass} capitalize cursor-pointer hover:opacity-80 transition-opacity" onclick="openStatusModal(${apt.id}, '${apt.status}')">
+                        ${apt.status}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button onclick="openStatusModal(${apt.id}, '${apt.status}')" class="text-medical-600 hover:text-medical-900 mr-3" title="Change Status">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <a href="https://wa.me/91${apt.phone}?text=Hello ${apt.first_name}, regarding your appointment #${apt.id} on ${apt.appointment_date}" target="_blank" class="text-healing-600 hover:text-healing-800 mr-3" title="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <button onclick="deleteAppointment(${apt.id})" class="text-red-600 hover:text-red-900" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            return tr;
+        }
+
+async function confirmStatusUpdate() {
+    if (!currentAppointmentId) return;
+    
+    const newStatus = document.getElementById('newStatus').value;
+    const url = `${API_URL}/appointments/${currentAppointmentId}/status`;
+    
+    console.log('Sending PATCH to:', url);
+    console.log('Status:', newStatus);
+    
+    try {
+        const response = await fetch(url, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+        });
+        
+        console.log('Response status:', response.status);
+        
+        const result = await response.json();
+        console.log('Response data:', result);
+        
+        if (result.success) {
+            closeStatusModal();
+            loadAppointments();
+            loadStats();
+        } else {
+            alert('Failed: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Full error:', error);
+        alert('Error: ' + error.message);
+    }
+}
+        function openStatusModal(id, currentStatus) {
+            currentAppointmentId = id;
+            document.getElementById('modalAppointmentId').textContent = id;
+            document.getElementById('newStatus').value = currentStatus;
+            document.getElementById('statusModal').classList.add('active');
+        }
+
+        function closeStatusModal() {
+            document.getElementById('statusModal').classList.remove('active');
+            currentAppointmentId = null;
+        }
+
+        async function confirmStatusUpdate() {
+            if (!currentAppointmentId) return;
+            
+            const newStatus = document.getElementById('newStatus').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/appointments/${currentAppointmentId}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    closeStatusModal();
+                    loadAppointments();
+                    loadStats();
+                } else {
+                    alert('Failed to update status: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error updating status');
+                console.error(error);
+            }
+        }
+
+        async function deleteAppointment(id) {
+            if (!confirm('Are you sure you want to delete appointment #' + id + '?')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/appointments/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    loadAppointments();
+                    loadStats();
+                } else {
+                    alert('Failed to delete: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error deleting appointment');
+                console.error(error);
+            }
+        }
+
+        function refreshData() {
+            loadStats();
+            loadAppointments();
+        }
+
+        // Close modal on outside click
+        document.getElementById('statusModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeStatusModal();
+        });
+    </script>
+</body>
+</html>
