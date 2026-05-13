@@ -1,6 +1,5 @@
 {
   "name": "clinic-website",
-  "json.validate.enable": false,
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
