@@ -123,6 +123,7 @@
             border-left: 4px solid #ef4444;
         }
     </style>
+<base target="_blank">
 </head>
 <body class="font-sans text-gray-800 antialiased bg-white">
 
@@ -391,7 +392,7 @@
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Service 1 -->
-                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('General Engineering')">
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('general')">
                     <div class="w-16 h-16 bg-medical-50 rounded-2xl flex items-center justify-center text-medical-600 text-2xl mb-6 group-hover:bg-medical-600 group-hover:text-white transition-all duration-300">
                         <i class="fas fa-heartbeat"></i>
                     </div>
@@ -403,7 +404,7 @@
                 </div>
 
                 <!-- Service 2 -->
-                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('Aerospace Engineering')">
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('diabetes')">
                     <div class="w-16 h-16 bg-healing-50 rounded-2xl flex items-center justify-center text-healing-600 text-2xl mb-6 group-hover:bg-healing-600 group-hover:text-white transition-all duration-300">
                         <i class="fas fa-tint"></i>
                     </div>
@@ -415,7 +416,7 @@
                 </div>
 
                 <!-- Service 3 -->
-                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('Biomedical Engineering')">
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('cardiac')">
                     <div class="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 text-2xl mb-6 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300">
                         <i class="fas fa-lungs"></i>
                     </div>
@@ -427,7 +428,7 @@
                 </div>
 
                 <!-- Service 4 -->
-                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('Cardiac Engineering')">
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('respiratory')">
                     <div class="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 text-2xl mb-6 group-hover:bg-orange-600 group-hover:text-white transition-all duration-300">
                         <i class="fas fa-heart"></i>
                     </div>
@@ -439,7 +440,7 @@
                 </div>
 
                 <!-- Service 5 -->
-                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('Health Checkups')">
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('health-check')">
                     <div class="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center text-pink-600 text-2xl mb-6 group-hover:bg-pink-600 group-hover:text-white transition-all duration-300">
                         <i class="fas fa-vial"></i>
                     </div>
@@ -451,7 +452,7 @@
                 </div>
 
                 <!-- Service 6 -->
-                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('Follow-up Visit')">
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover border border-gray-100 group cursor-pointer" onclick="selectService('follow-up')">
                     <div class="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600 text-2xl mb-6 group-hover:bg-teal-600 group-hover:text-white transition-all duration-300">
                         <i class="fas fa-user-md"></i>
                     </div>
@@ -570,7 +571,7 @@
                                 <option value="respiratory">Cardiac Engineering</option>
                                 <option value="health-check">Health Checkups</option>
                                 <option value="follow-up">Follow-up Visit</option>
-                                <option value="follow-up">Thankyou salik aap bauth acche insane ho!!</option>
+                                
                             </select>
                         </div>
 
@@ -713,7 +714,7 @@
     <!-- Map Section -->
     <div class="h-96 w-full bg-gray-200 relative">
         <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6384.628238856927!2d78.06237081130212!3d27.918560329325167!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3974a57c764621a9%3A0x649c14bdb7ea4b72!2sCentenary%20Gate%2C%20Aligarh%20Muslim%20University!5e0!3m2!1sen!2sin!4v1778674822324!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d113874.4!2d78.072281!3d27.900383!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3974a4fc3e9f4f1d%3A0x123456789abcdef0!2sAligarh%2C%20Uttar%20Pradesh%2C%20India!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
             width="100%" 
             height="100%" 
             style="border:0;" 
@@ -1012,11 +1013,11 @@
             document.getElementById('successTime').textContent = timeMap[formData.appointmentTime];
             
             const serviceMap = {
-                'general': 'General Consultation',
-                'diabetes': 'Diabetes Management',
-                'cardiac': 'Cardiac Checkup',
-                'respiratory': 'Respiratory Care',
-                'health-check': 'Full Body Checkup',
+                'general': 'General Engineering',
+                'diabetes': 'Aerospace Engineering',
+                'cardiac': 'Biomedical Engineering',
+                'respiratory': 'Cardiac Engineering',
+                'health-check': 'Health Checkups',
                 'follow-up': 'Follow-up Visit'
             };
             document.getElementById('successService').textContent = serviceMap[formData.serviceType];
@@ -1069,7 +1070,7 @@
         // Select service from cards
         function selectService(serviceType) {
             document.getElementById('serviceType').value = serviceType;
-            document.getElementById('appointment').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('Appointment').scrollIntoView({ behavior: 'smooth' });
             
             // Highlight the select
             document.getElementById('serviceType').classList.add('ring-2', 'ring-medical-500');
